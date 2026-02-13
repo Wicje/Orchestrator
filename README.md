@@ -24,7 +24,7 @@ Testable engine logic
 
 ## Prerequisites
 
-    Rust (1.70+)
+    ```Rust (1.70+)```
 
 # Installation
 
