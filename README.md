@@ -1,16 +1,12 @@
 # Orchestrator
 
 A deterministic project bootstrapping engine.  
-You declare what you want (language, framework, features) – 
-Orchestrator figures out how to build it.
-Orchestrator is a Rust-based CLI tool that reads a project specification file and automatically generates 
-and executes a setup plan.
-Instead of manually running scaffold commands and installing dependencies, 
-you describe your project in a JSON spec file. Orchestrator builds a 
-reproducible plan and applies it for you.
+You declare what you want (language, framework, features) – Orchestrator figures out how to build it.
 
-```bash
+Orchestrator is a Rust-based CLI tool that reads a project specification file and automatically generates and executes a setup plan. Instead of manually running scaffold commands and installing dependencies, you describe your project in a JSON spec file. Orchestrator builds a reproducible plan and applies it for you.
+
 # Example: generate a React + Tailwind + ESLint project
+```bash
 orchestrator plan myapp.json -o plan.json
 orchestrator apply plan.json```
 
@@ -124,3 +120,17 @@ Extending the Registry
 
 To add new frameworks, features, or dependencies, edit the seed data in migrations/01_initial.sql and rebuild.
 For production use, you may want to implement a mechanism to fetch registry updates without rebuilding the binary.
+
+
+src/
+├── main.rs        # Entry point
+├── cli.rs         # CLI argument parsing and command handling
+├── spec.rs        # Spec file parsing and validation
+├── registry/
+│   ├── mod.rs     # Registry module root
+│   ├── models.rs  # Framework & feature definitions
+│   └── sqlite.rs  # SQLite-backed registry implementation
+├── engine.rs      # Core logic that builds plans from specs
+├── plan.rs        # Plan data structures
+└── executor.rs    # Executes plans (scaffolding, installs, etc.)
+
