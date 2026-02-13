@@ -1,30 +1,36 @@
 # Orchestrator
 
 A deterministic project bootstrapping engine.  
-You declare what you want (language, framework, features) – Orchestrator figures out how to build it.
+You declare what you want (language, framework, features) – 
+Orchestrator figures out how to build it.
+Orchestrator is a Rust-based CLI tool that reads a project specification file and automatically generates 
+and executes a setup plan.
+Instead of manually running scaffold commands and installing dependencies, 
+you describe your project in a JSON spec file. Orchestrator builds a 
+reproducible plan and applies it for you.
 
 ```bash
 # Example: generate a React + Tailwind + ESLint project
 orchestrator plan myapp.json -o plan.json
 orchestrator apply plan.json```
 
-Features
+## Features
+Generate project setup plans from a JSON specification
 
-    Declarative specs – express intent, not implementation.
+Apply plans to scaffold new projects
 
-    Pure resolution engine – guarantees reproducible plans.
+Install dependencies and development tools automatically
 
-    Embedded SQLite registry – knows frameworks, features, dependencies, and config mutations.
+Clean separation between specification, planning, and execution
 
-    Modular monolith – clear separation between spec, engine, plan, and executor.
+Testable engine logic
 
-    Long‑term stability – versioned specs and registry data.
 
-Prerequisites
+## Prerequisites
 
     Rust (1.70+)
 
-Installation
+# Installation
 
 Clone the repository and build the binary:
 ```bash
@@ -39,8 +45,8 @@ You can move it to a directory in your $PATH, e.g.:
 
 cp target/release/orchestrator ~/.local/bin/```
 
-Usage
-1. Create a specification file
+## Usage
+### 1. Create a specification file
 
 A spec is a JSON file describing your project. Example myapp.json:
 ```json
@@ -49,17 +55,20 @@ A spec is a JSON file describing your project. Example myapp.json:
   "spec_version": 1,
   "language": "javascript",
   "framework": "react",
-  "features": ["tailwind", "eslint"]
-}```
+  "features": ["tailwind", "eslint"]```
 
 Supported values depend on the data seeded into the registry (see migrations/01_initial.sql).
-2. Generate an execution plan
+
+### 2. Generate an execution plan
+
 ```bash
 
 orchestrator plan myapp.json -o plan.json
 ```
+
 This validates the spec against the registry, resolves dependencies, and writes a complete blueprint to plan.json.
-3. Apply the plan
+
+### 3. Apply the plan
 
 You can apply a previously generated plan:
 ```bash
@@ -69,12 +78,14 @@ cd my-project
 orchestrator apply ../plan.json
 ```
 Or apply directly from a spec (which generates the plan in memory and executes it immediately):
+
 ```bash
 
 orchestrator apply myapp.json --from-spec
 ```
 The executor will scaffold the project (using the framework’s base command), install dependencies, and apply any configuration mutations (e.g., adding Tailwind to Vite config).
-Project Structure
+
+## Project Structure
 text
 ```
 src/
@@ -90,16 +101,18 @@ src/
 └── executor.rs    # Executes plans (scaffolding, installs, etc.)
 ```
 The registry database is stored in your system’s config directory (~/.config/orchestrator/registry.db on Linux/macOS).
-How It Works
 
-    Spec – user provides a versioned, declarative description.
+### How It Works
 
-    Engine – pure function that validates compatibility, resolves dependencies, and produces an explicit ExecutionPlan.
+Spec – user provides a versioned, declarative description.
 
-    Executor – dumb worker that follows the plan: runs shell commands, installs packages, writes files, and applies modifications.
+Engine – pure function that validates compatibility, resolves dependencies, and produces an explicit ExecutionPlan.
+
+Executor – dumb worker that follows the plan: runs shell commands, installs packages, writes files, and applies modifications.
 
 This separation ensures the system is testable, maintainable, and adaptable to future ecosystems.
-Testing
+
+## Testing
 
 Run the test suite with:
 ```bash
