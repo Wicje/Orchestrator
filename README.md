@@ -1,48 +1,73 @@
-""src/
-├── main.rs
-├── cli.rs
-├── spec.rs
+Orchestrator
+
+Orchestrator is a Rust-based CLI tool that reads a project specification file and automatically generates and executes a setup plan.
+
+Instead of manually running scaffold commands and installing dependencies, you describe your project in a JSON spec file. Orchestrator builds a reproducible plan and applies it for you.
+
+Features
+
+Generate project setup plans from a JSON specification
+
+Apply plans to scaffold new projects
+
+Install dependencies and development tools automatically
+
+Clean separation between specification, planning, and execution
+
+Testable engine logic
+
+Project Structure
+src/
+├── main.rs        # Entry point
+├── cli.rs         # CLI argument parsing and command handling
+├── spec.rs        # Spec file parsing and validation
 ├── registry/
-│   ├── mod.rs
-│   ├── models.rs
-│   └── sqlite.rs
-├── engine.rs
-├── plan.rs
-└── executor.rs""
+│   ├── mod.rs     # Registry module root
+│   ├── models.rs  # Framework & feature definitions
+│   └── sqlite.rs  # SQLite-backed registry implementation
+├── engine.rs      # Core logic that builds plans from specs
+├── plan.rs        # Plan data structures
+└── executor.rs    # Executes plans (scaffolding and installs)
 
+Architecture Overview
 
-#src/main.rs – Entry Point
-rust
+Orchestrator is structured into clear layers:
 
-mod cli;
-mod engine;
-mod executor;
-mod plan;
-mod registry;
-mod spec;
+Spec – Describes what the user wants.
 
-fn main() {
-    if let Err(e) = cli::Cli::run() {
-        eprintln!("Error: {}", e);
-        std::process::exit(1);
-    }
-}
+Engine – Converts the spec into a concrete plan.
 
-Step 6 – Build and Test
+Plan – A structured set of executable steps.
 
-Run the following commands in your project root:
-bash
+Executor – Runs the steps defined in the plan.
 
-# Build the project
+Registry – Stores knowledge about frameworks and features.
+
+This separation keeps the system modular, testable, and extensible.
+
+Installation
+
+Make sure you have Rust installed.
+
+Then build the project:
+
 cargo build --release
 
-# Run tests (the engine tests we wrote)
+
+The compiled binary will be available at:
+
+target/release/orchestrator
+
+Running Tests
 cargo test
 
-All tests should pass.
-Step 7 – Try It Out
-Create a spec file myapp.json:
-json
+
+All engine-related tests should pass successfully.
+
+Usage
+1. Create a Spec File
+
+Example: myapp.json
 
 {
   "spec_version": 1,
@@ -51,22 +76,59 @@ json
   "features": ["tailwind", "eslint"]
 }
 
-Generate a plan:
-bash
-
+2. Generate a Plan
 ./target/release/orchestrator plan myapp.json -o plan.json
 
-This creates plan.json with dependencies etc.
-Apply the plan (in a new directory):
-bash
+
+This creates a plan.json file containing all setup steps.
+
+3. Apply the Plan
+
+Option A — Apply from generated plan:
 
 mkdir testapp
 cd testapp
 ../target/release/orchestrator apply ../plan.json
 
-Or apply directly from spec:
-bash
+
+Option B — Apply directly from spec:
 
 ../target/release/orchestrator apply ../myapp.json --from-spec
 
-The executor will run npm create vite@latest . -- --template react, then install tailwindcss and eslint as dev dependencies.
+What Happens Internally
+
+For the example spec above, Orchestrator will:
+
+Run Vite to scaffold a React project
+
+Install TailwindCSS as a dev dependency
+
+Install ESLint as a dev dependency
+
+All of this is derived from the specification file.
+
+Why This Exists
+
+Orchestrator separates project intent from execution.
+
+Instead of manually remembering setup commands, you declare what you want in a spec file. The engine converts that into a deterministic plan, and the executor applies it.
+
+This makes project setup:
+
+Reproducible
+
+Automatable
+
+Extendable
+
+Easier to test
+
+Future Improvements
+
+Support additional languages and frameworks
+
+Remote registry support
+
+Plugin system for custom features
+
+Plan diffing and dry-run mode
